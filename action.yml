@@ -1,0 +1,39 @@
+name: "Repo Guardian"
+description: "Remind inactive PR reviewers and prompt branch cleanup across repositories (org or user)."
+author: "RepoGuardian Contributors"
+branding:
+  icon: "bell"
+  color: "blue"
+inputs:
+  github_token:
+    description: "GitHub token with repo scope (defaults to GITHUB_TOKEN)."
+    required: false
+  owner:
+    description: "Owner (org or user) whose repositories to scan (required if repos not specified)."
+    required: false
+  repos:
+    description: "Comma-separated list of repositories. Each may be 'owner/repo' or just 'repo' (requires owner input if omitted)."
+    required: false
+  review_hours:
+    description: "Threshold in hours after which an unreviewed requested review triggers a reminder."
+    required: false
+    default: "12"
+  max_closed_lookback_days:
+    description: "Days to look back for merged PRs whose branches still exist."
+    required: false
+    default: "14"
+  dry_run:
+    description: "If 'true', only log actions without commenting."
+    required: false
+    default: "false"
+  include_forks:
+    description: "If 'true', include forked repositories during auto-discovery."
+    required: false
+    default: "false"
+  include_archived:
+    description: "If 'true', include archived repositories during auto-discovery."
+    required: false
+    default: "false"
+runs:
+  using: "node20"
+  main: "remind-reviewers.js"

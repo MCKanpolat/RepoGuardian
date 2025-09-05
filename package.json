@@ -1,0 +1,19 @@
+{
+  "name": "repo-guardian",
+  "version": "0.2.0",
+  "description": "GitHub Action / CLI to remind inactive PR reviewers and nudge branch cleanup across org or user repositories.",
+  "license": "MIT",
+  "main": "remind-reviewers.js",
+  "bin": {
+    "repo-guardian": "remind-reviewers.js"
+  },
+  "scripts": {
+    "remind": "node remind-reviewers.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.0.2"
+  }
+}
