@@ -17,9 +17,11 @@ coverage/
 *.lcov
 
 # Build artifacts / bundles
-dist/
+# Keep dist committed for GitHub Action (bundled with ncc)
+!.gitignore
 .tmp/
 .temp/
+!dist/
 
 # OS / Editor
 .DS_Store

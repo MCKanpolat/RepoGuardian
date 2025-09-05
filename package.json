@@ -3,17 +3,22 @@
   "version": "0.0.1",
   "description": "GitHub Action / CLI to remind inactive PR reviewers and nudge branch cleanup across org or user repositories.",
   "license": "MIT",
-  "main": "remind-reviewers.js",
+  "main": "dist/index.js",
   "bin": {
     "repo-guardian": "remind-reviewers.js"
   },
   "scripts": {
-    "remind": "node remind-reviewers.js"
+    "build": "ncc build remind-reviewers.js -o dist",
+    "remind": "node remind-reviewers.js",
+    "prepare": "npm run build"
   },
   "engines": {
     "node": ">=18"
   },
   "dependencies": {
     "@octokit/rest": "^20.0.2"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.38.1"
   }
 }

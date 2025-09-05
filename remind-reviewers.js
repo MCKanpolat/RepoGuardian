@@ -1,4 +1,23 @@
 #!/usr/bin/env node
+// Shim: map GitHub Action inputs (exposed as INPUT_*) to expected environment variable names
+// This allows the same script to operate both as a standalone CLI (explicit env vars)
+// and as a GitHub Action using 'with:' inputs without adding @actions/core dependency.
+// GitHub converts input names to uppercase and replaces spaces with underscores, prefixed by INPUT_.
+function mapInput(name, targetEnv) {
+  const key = `INPUT_${name.toUpperCase()}`;
+  if (process.env[key] && !process.env[targetEnv]) {
+    process.env[targetEnv] = process.env[key];
+  }
+}
+mapInput('github_token', 'GITHUB_TOKEN');
+mapInput('owner', 'OWNER');
+mapInput('repos', 'REPOS');
+mapInput('review_hours', 'REVIEW_HOURS');
+mapInput('max_closed_lookback_days', 'MAX_CLOSED_LOOKBACK_DAYS');
+mapInput('dry_run', 'DRY_RUN');
+mapInput('include_forks', 'INCLUDE_FORKS');
+mapInput('include_archived', 'INCLUDE_ARCHIVED');
+
 const { Octokit } = require('@octokit/rest');
 
 if (!process.env.GITHUB_TOKEN) {
