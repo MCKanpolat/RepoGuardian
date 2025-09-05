@@ -37,7 +37,7 @@ jobs:
       issues: write
     steps:
       - name: Run Repo Guardian (org-wide auto discovery)
-        uses: MCKanpolat/RepoGuardian@v0.2.0
+        uses: MCKanpolat/RepoGuardian@V1
         with:
           owner: your-org-or-username
           review_hours: 12
@@ -49,7 +49,7 @@ jobs:
 ```yaml
     steps:
       - name: Specific repositories
-        uses: MCKanpolat/RepoGuardian@v0.2.0
+        uses: MCKanpolat/RepoGuardian@V1
         with:
           repos: your-org/repo-one,your-org/repo-two
           review_hours: 6
@@ -59,7 +59,7 @@ jobs:
 ```yaml
     steps:
       - name: Implicit owner
-        uses: MCKanpolat/RepoGuardian@v0.2.0
+        uses: MCKanpolat/RepoGuardian@V1
         with:
           owner: your-org
           repos: repo-one,repo-two
@@ -87,7 +87,7 @@ If you need to use a PAT instead (e.g., cross-repo or org-level constraints):
 ```yaml
     steps:
       - name: Repo Guardian with PAT
-        uses: MCKanpolat/RepoGuardian@v0.2.0
+        uses: MCKanpolat/RepoGuardian@V1
         with:
           owner: your-org
           github_token: ${{ secrets.MY_PAT }}
