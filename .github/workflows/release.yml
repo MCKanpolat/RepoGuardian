@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Default release type if commit messages lack explicit #major/#minor/#patch"
+        required: true
+        default: patch
+      prerelease_id:
+        description: "Optional prerelease identifier (e.g. beta, rc)"
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  semver-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version
+        id: semver
+        uses: MCKanpolat/auto-semver-action@v2
+        with:
+          releaseType: ${{ github.event.inputs.release_type || 'patch' }}
+          identifier: ${{ github.event.inputs.prerelease_id }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Show calculated version
+        run: |
+          echo "Next version: ${{ steps.semver.outputs.version }}"
+
+      - name: Update package.json version
+        run: |
+          version=${{ steps.semver.outputs.version }}
+          node -e "const fs=require('fs');const p=require('./package.json');p.version='"$version"';fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n');"
+          if git diff --quiet package.json; then
+            echo "package.json already at version $version"
+          else
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+            git add package.json
+            git commit -m "chore: bump version to v$version [skip ci]"
+            git push origin HEAD:main
+          fi
+
+      - name: Create & push tag
+        run: |
+          version=${{ steps.semver.outputs.version }}
+          git fetch --tags --quiet
+          if git rev-parse "v$version" >/dev/null 2>&1; then
+            echo "Tag v$version already exists. Skipping."
+          else
+            git tag -a "v$version" -m "Release v$version"
+            git push origin "v$version"
+          fi
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.semver.outputs.version }}
+          name: v${{ steps.semver.outputs.version }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Marketplace metadata note
+        run: echo "GitHub Marketplace listing updates automatically from the tag."
